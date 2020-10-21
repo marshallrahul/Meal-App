@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import '../widgets/main_drawer.dart';
 
 class MealFilters extends StatefulWidget {
+  final Map<String, bool> mealFilters;
+  final Function filterItems;
+
+  MealFilters(
+    this.mealFilters,
+    this.filterItems,
+  );
   @override
   _MealFiltersState createState() => _MealFiltersState();
 }
@@ -10,8 +17,19 @@ class MealFilters extends StatefulWidget {
 class _MealFiltersState extends State<MealFilters> {
   bool _glutenFree = false;
   bool _lactoseFree = false;
-  bool _vegitarianFree = false;
-  bool _veganFree = false;
+  bool _vegetarian = false;
+  bool _vegan = false;
+
+  @override
+  void initState() {
+    setState(() {
+      _glutenFree = widget.mealFilters['gluten'];
+      _lactoseFree = widget.mealFilters['lactose'];
+      _vegetarian = widget.mealFilters['vegetarian'];
+      _vegan = widget.mealFilters['vegan'];
+    });
+    super.initState();
+  }
 
   List<Widget> _buildSwitchTileWidget(
     String title,
@@ -46,6 +64,20 @@ class _MealFiltersState extends State<MealFilters> {
             letterSpacing: 1.2,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () {
+              final selectedMeal = {
+                'gluten': _glutenFree,
+                'lactose': _lactoseFree,
+                'vegan': _vegan,
+                'vegetarian': _vegetarian,
+              };
+              widget.filterItems(selectedMeal);
+            },
+          ),
+        ],
       ),
       drawer: MainDrawer(),
       body: Column(
@@ -69,7 +101,7 @@ class _MealFiltersState extends State<MealFilters> {
             'Gluten-free',
             'Only include gluten-free meals',
             _glutenFree,
-            (value) {
+            (bool value) {
               setState(() {
                 _glutenFree = value;
               });
@@ -79,29 +111,29 @@ class _MealFiltersState extends State<MealFilters> {
             'Lactose-free',
             'Only include lactose-free meals',
             _lactoseFree,
-            (value) {
+            (bool value) {
               setState(() {
                 _lactoseFree = value;
               });
             },
           ),
           ..._buildSwitchTileWidget(
-            'Vegitarian-free',
-            'Only include vegitarian-free meals',
-            _vegitarianFree,
-            (value) {
+            'Vegetarian',
+            'Only include vegitarian meals',
+            _vegetarian,
+            (bool value) {
               setState(() {
-                _vegitarianFree = value;
+                _vegetarian = value;
               });
             },
           ),
           ..._buildSwitchTileWidget(
-            'Vegan-free',
-            'Only include vegan-free meals',
-            _veganFree,
-            (value) {
+            'Vegan',
+            'Only include vegan meals',
+            _vegan,
+            (bool value) {
               setState(() {
-                _veganFree = value;
+                _vegan = value;
               });
             },
           ),
